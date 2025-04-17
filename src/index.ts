@@ -4,6 +4,8 @@ import path from 'path';
 
 const port = 5000;
 const filePath = path.join(__dirname,'data','products.json');
+const assetsPath = path.join(__dirname,'assets');
+console.log(assetsPath);
 
 const server = http.createServer((req,res)=>{
     if(req.url === '/products'){
@@ -25,8 +27,8 @@ const server = http.createServer((req,res)=>{
             });
         });
 
-
-    }else if(req.url === '/products/new'){
+    }
+    else if(req.url === '/products/new'){
         res.writeHead(200,{'Content-Type':'text/html'});
         res.write(`
             <head><title>Add New Product</title></head>
@@ -40,7 +42,8 @@ const server = http.createServer((req,res)=>{
             </body>    
         `);
         res.end()
-    } else if(req.method === "POST" && req.url === "/add-product"){
+    }
+    else if(req.method === "POST" && req.url === "/add-product"){
         let body = '';
         req.on('data', (chunk) => {
             body += chunk.toString(); // convert Buffer to string
@@ -79,7 +82,7 @@ const server = http.createServer((req,res)=>{
                 console.error(err);
             
             }
-            
+
             fs.access(filePath, (err) => {
                 if (err) {
                     console.error('File does not exist:', filePath);
@@ -90,11 +93,41 @@ const server = http.createServer((req,res)=>{
             });
 
         });
-    } else if(req.url === '/'){
+    } 
+    else if(req.method === "GET" && req.url === "/assets") {
+        fs.access(assetsPath, (err) => {
+            if(err){
+                console.error('Assets directory does not exist:', assetsPath);
+                res.writeHead(404, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({ message: 'Assets directory not found' }));
+                return;
+            }
+
+            fs.readdir(assetsPath, (err, files) => {
+                if(err){
+                    console.error('Error reading assets directory:', err);
+                    res.writeHead(500, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({ message: 'Internal Server Error' }));
+                    return;
+                }
+
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.write('<h1>Assets Directory</h1>');
+                res.write('<ul>');
+                files.forEach(file => {
+                    res.write(`<li>${file} <span> - <button> Delete </button> </span></li>`);
+                });
+                res.write('</ul>');
+                res.end();
+            });
+        });
+    }
+    else if(req.url === '/'){
         res.writeHead(200,{'Content-Type':'text/html'});
         res.write('<h1>Welcome to the Home Page</h1>');
         res.end()
-    } else {
+    } 
+    else {
         res.writeHead(404,{'Content-Type':'application/json'});
         const data = {
             message:'Not Found'
