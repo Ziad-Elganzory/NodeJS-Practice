@@ -115,12 +115,36 @@ const server = http.createServer((req,res)=>{
                 res.write('<h1>Assets Directory</h1>');
                 res.write('<ul>');
                 files.forEach(file => {
-                    res.write(`<li>${file} <span> - <button> Delete </button> </span></li>`);
+                    res.write(`<li><a href="/delete?file=${encodeURIComponent(file)}">${file}</a></li>`);
                 });
                 res.write('</ul>');
                 res.end();
             });
         });
+    }
+    else if(req.method === "GET" && req.url?.startsWith("/delete")) {
+        const file = decodeURIComponent(req.url.split('?')[1].split('=')[1]);
+        const assetFilePath = path.join(assetsPath, file);
+        // ** TODO check if the file exists in the assets directory
+        fs.access(assetFilePath, async(err) => {
+            if(err){
+                console.error('File does not exist:', file);
+                res.writeHead(404, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({ message: 'File not found' }));
+                return;
+            }
+            try{
+                await fsPromises.unlink(assetFilePath);
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({ message: `File: ${file} deleted successfully` }));
+            } catch(err){
+                console.error('Error deleting file:', err);
+                res.writeHead(500, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({ message: 'Internal Server Error' }));
+                return;
+            }
+        }
+        );
     }
     else if(req.url === '/'){
         res.writeHead(200,{'Content-Type':'text/html'});
