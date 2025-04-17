@@ -1,7 +1,6 @@
 import * as http from 'http';
-import fs, { write } from 'fs';
+import fs, { promises as fsPromises } from 'fs';
 import path from 'path';
-import { title } from 'process';
 
 const port = 5000;
 const filePath = path.join(__dirname,'data','products.json');
@@ -46,12 +45,41 @@ const server = http.createServer((req,res)=>{
         req.on('data', (chunk) => {
             body += chunk.toString(); // convert Buffer to string
         });
-        req.on('end',()=>{
+        req.on('end',async ()=>{
             const formData = new URLSearchParams(body);
             const productitle = formData.get('title');
             const productdescription = formData.get('description');
 
+            try{
+                const jsonData = await fsPromises.readFile(filePath,'utf8');
+                
+                const jsonProducts : {products:[{id:number, title: string, description: string}]} = JSON.parse(jsonData);
 
+                jsonProducts.products.push({
+                    id:jsonProducts.products.length + 1,
+                    title:productitle as string,
+                    description:productdescription as string,    
+                });
+
+                const updatedData = JSON.stringify(jsonProducts, null, 2);
+
+                await fsPromises.writeFile(filePath,updatedData,{flag:"w"});
+
+                res.writeHead(200,{'Content-Type':'application/json'});
+                res.end(JSON.stringify({
+                    'message':'Product added successfully',
+                    'product':{
+                        title:productitle,
+                        price:productdescription
+                    }
+                }));
+
+            } catch(err){
+                
+                console.error(err);
+            
+            }
+            
             fs.access(filePath, (err) => {
                 if (err) {
                     console.error('File does not exist:', filePath);
@@ -59,30 +87,6 @@ const server = http.createServer((req,res)=>{
                     res.end(JSON.stringify({ message: 'File not found' }));
                     return;
                 }
-    
-                fs.readFile(filePath,'utf8',(err,data)=>{
-                    const jsonProducts : {products:[{id:number, title: string, description: string}]} = JSON.parse(data);
-                    const submittedData = {
-                        id:jsonProducts.products.length + 1,
-                        title:productitle as string,
-                        description:productdescription as string,
-                    };
-    
-                    jsonProducts.products.push(submittedData);
-                    const updatedData = JSON.stringify(jsonProducts, null, 2);
-    
-                    fs.writeFile(filePath,updatedData,{flag:"w"}, (err) => {
-                        console.error('Error writing file:', err);
-                    });
-                    res.writeHead(200,{'Content-Type':'application/json'});
-                    res.end(JSON.stringify({
-                        'message':'Product added successfully',
-                        'product':{
-                            title:productitle,
-                            price:productdescription
-                        }
-                    }));
-                });
             });
 
         });
