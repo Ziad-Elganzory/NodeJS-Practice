@@ -4,9 +4,10 @@ import path from 'path';
 import { title } from 'process';
 
 const port = 5000;
+const filePath = path.join(__dirname,'data','products.json');
+
 const server = http.createServer((req,res)=>{
     if(req.url === '/products'){
-        const filePath = path.join(__dirname,'data','products.json');
         fs.access(filePath, (err) => {
             if (err) {
                 console.error('File does not exist:', filePath);
@@ -17,21 +18,10 @@ const server = http.createServer((req,res)=>{
 
             fs.readFile(filePath,'utf8',(err,data)=>{
                 const jsonProducts : {products:[{id:number, title: string, description: string}]} = JSON.parse(data);
-                const submittedData = {
-                    id:2,
-                    title:'Product 2',
-                    description:'Product 2 Description',
-                };
-
-                jsonProducts.products.push(submittedData);
-                const updatedData = JSON.stringify(jsonProducts, null, 2);
-
-                fs.writeFile(filePath,updatedData,{flag:"w"}, (err) => {
-                    console.error('Error writing file:', err);
-                });
+                const productData = JSON.stringify(jsonProducts, null, 2);
                 res.writeHead(200,{'Content-Type':'application/json'});
-                console.log('Data:',);
-                res.write(JSON.stringify(jsonProducts));
+                console.log('Data:',productData);
+                res.write(productData);
                 res.end()
             });
         });
@@ -58,16 +48,43 @@ const server = http.createServer((req,res)=>{
         });
         req.on('end',()=>{
             const formData = new URLSearchParams(body);
-            console.log('Form Data:', formData);
+            const productitle = formData.get('title');
+            const productdescription = formData.get('description');
 
-            res.writeHead(200,{'Content-Type':'application/json'});
-            res.end(JSON.stringify({
-                'message':'Product added successfully',
-                'product':{
-                    name:formData.get('name'),
-                    price:formData.get('price')
+
+            fs.access(filePath, (err) => {
+                if (err) {
+                    console.error('File does not exist:', filePath);
+                    res.writeHead(404, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({ message: 'File not found' }));
+                    return;
                 }
-            }));
+    
+                fs.readFile(filePath,'utf8',(err,data)=>{
+                    const jsonProducts : {products:[{id:number, title: string, description: string}]} = JSON.parse(data);
+                    const submittedData = {
+                        id:jsonProducts.products.length + 1,
+                        title:productitle as string,
+                        description:productdescription as string,
+                    };
+    
+                    jsonProducts.products.push(submittedData);
+                    const updatedData = JSON.stringify(jsonProducts, null, 2);
+    
+                    fs.writeFile(filePath,updatedData,{flag:"w"}, (err) => {
+                        console.error('Error writing file:', err);
+                    });
+                    res.writeHead(200,{'Content-Type':'application/json'});
+                    res.end(JSON.stringify({
+                        'message':'Product added successfully',
+                        'product':{
+                            title:productitle,
+                            price:productdescription
+                        }
+                    }));
+                });
+            });
+
         });
     } else if(req.url === '/'){
         res.writeHead(200,{'Content-Type':'text/html'});
