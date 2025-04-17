@@ -1,11 +1,12 @@
 import * as http from 'http';
-import fs from 'fs';
+import fs, { write } from 'fs';
 import path from 'path';
+import { title } from 'process';
 
 const port = 5000;
 const server = http.createServer((req,res)=>{
     if(req.url === '/products'){
-        const filePath = path.join(__dirname,'data','products.jso');
+        const filePath = path.join(__dirname,'data','products.json');
         fs.access(filePath, (err) => {
             if (err) {
                 console.error('File does not exist:', filePath);
@@ -13,10 +14,24 @@ const server = http.createServer((req,res)=>{
                 res.end(JSON.stringify({ message: 'File not found' }));
                 return;
             }
+
             fs.readFile(filePath,'utf8',(err,data)=>{
+                const jsonProducts : {products:[{id:number, title: string, description: string}]} = JSON.parse(data);
+                const submittedData = {
+                    id:2,
+                    title:'Product 2',
+                    description:'Product 2 Description',
+                };
+
+                jsonProducts.products.push(submittedData);
+                const updatedData = JSON.stringify(jsonProducts, null, 2);
+
+                fs.writeFile(filePath,updatedData,{flag:"w"}, (err) => {
+                    console.error('Error writing file:', err);
+                });
                 res.writeHead(200,{'Content-Type':'application/json'});
-                console.log('Data:',JSON.parse(data));
-                res.write(data);
+                console.log('Data:',);
+                res.write(JSON.stringify(jsonProducts));
                 res.end()
             });
         });
@@ -29,8 +44,8 @@ const server = http.createServer((req,res)=>{
             <body>
                 <h1>Add New Product</h1>
                 <form action="/add-product" method="POST">
-                    <input type="text" name="name" placeholder="Product Name" required>
-                    <input type="number" name="price" placeholder="Product Price" required>
+                    <input type="text" id="title" name="title" placeholder="Product Name" required><br><br>
+                    <input type="textarea" id="title" name="description" placeholder="Product Description" required><br><br>
                     <button type="submit">Add Product</button>
                 </form>
             </body>    
