@@ -17,6 +17,7 @@
     "undici-types": "^6.21.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.7.0",
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.1",
     "nodemon": "^3.1.9",
