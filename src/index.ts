@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import fs, {promises as fsPromises, stat} from 'fs';
 import path from 'path';
 import { generateFakeData } from './utils/fakeData';
+import { IProduct } from './interfaces/IProducts';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -78,14 +79,38 @@ app.get('/products/:id',async(req: Request, res: Response) => {
 });
 
 // Endpoint to generate fake products
-
 app.get('/fake-products',(req: Request, res: Response) => {
-    res.setHeader('Content-Type', 'application/json');
+    // Filter By Query, keyof IProduct
+    const filterQuery = req.query.filter as string;
+
+    if(filterQuery){
+        const propertiesToFilter = filterQuery.split(',');
+        let filteredProducts = [];
+
+        filteredProducts = fakeProducts.map(product => {
+            const filteredProduct : any = {};
+
+            propertiesToFilter.forEach(property => {
+                if(product.hasOwnProperty(property)){
+                    filteredProduct[property] = product[property as keyof IProduct];
+                }
+            });
+            return {id: product.id ,...filteredProduct};
+        })
+        res.send({
+            status:200,
+            message:'Fake Products Fetched Successfully',
+            products: filteredProducts
+        });
+        return;
+    }
+
     res.send({
         status:200,
         message:'Fake Products Fetched Successfully',
         products: fakeProducts
     });
+
 });
 
 app.get('/fake-products/:id',(req: Request, res: Response) => {
@@ -99,7 +124,7 @@ app.get('/fake-products/:id',(req: Request, res: Response) => {
     }
 
     try{
-        const product: {id: number, title: string, price: number} | undefined = fakeProducts.find( product => productID == product.id);
+        const product: IProduct | undefined = fakeProducts.find( product => productID == product.id);
         if(!product){
             res.status(404).send({
                 status:404,
@@ -122,6 +147,8 @@ app.get('/fake-products/:id',(req: Request, res: Response) => {
         return;
     }
 });
+
+
 
 
 app.listen(PORT,() => {
