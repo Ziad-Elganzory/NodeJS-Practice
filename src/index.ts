@@ -291,6 +291,45 @@ app.patch('/fake-products/:id',(req: Request, res: Response) => {
     }
 });
 
+// Endpoint to Delete a certain fake product
+app.delete('/fake-products/:id',(req: Request, res: Response) => {
+    const productID = +req.params.id;
+    if(isNaN(productID)){
+        res.status(400).send({
+            status:400,
+            message:'Invalid product ID'
+        });
+        return;
+    }
+
+    try{
+        const productData: IProduct | undefined = fakeProducts.find(product => product.id === productID);
+        if(!productData){
+            res.status(404).send({
+                status:404,
+                message:`Product ID: ${productID} Not Found`
+            });
+            return;
+        }
+        const filteredProducts = fakeProducts.filter(product => product.id !== productID);
+        fakeProducts.length = 0;
+        fakeProducts.push(...filteredProducts);
+        res.status(200).send({
+            status:200,
+            message:'Fake Product Deleted Successfully',
+            products: productData
+        });
+        
+    } catch(err){
+        res.status(500).send({
+            status:500,
+            message:'Internal Server Error',
+            error:err
+        });
+        return;
+    }
+});
+
 
 
 
