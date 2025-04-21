@@ -19,6 +19,11 @@
       "id": 4,
       "title": "Product 4",
       "description": "Product 4 Description"
+    },
+    {
+      "id": 5,
+      "title": "Ganzory Product",
+      "description": "New Test Product description"
     }
   ]
 }
