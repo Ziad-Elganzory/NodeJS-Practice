@@ -190,7 +190,7 @@ app.post('/fake-products',async(req: Request, res: Response) => {
 
 // Endpoint to get fake products with filter query fetaure
 app.get('/fake-products',(req, res) => {
-    res.send(productController.getProducts());
+    res.send(productController.getProducts(req,res));
 });
 
 // Endpoint to get fake product by ID
