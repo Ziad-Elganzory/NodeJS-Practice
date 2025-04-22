@@ -3,6 +3,8 @@ import fs, {promises as fsPromises} from 'fs';
 import path from 'path';
 import { generateFakeProducts } from './utils/fakeProductsData';
 import { IProduct } from './interfaces/IProducts';
+import ProductController from './controllers/ProductController';
+import ProductService from './services/ProductService';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +23,10 @@ const fakeProducts = generateFakeProducts();
 // }))
 
 app.use(express.json());
+
+const productsService = new ProductService(fakeProducts);
+
+const productController = new ProductController(productsService)
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello World');
@@ -183,38 +189,8 @@ app.post('/fake-products',async(req: Request, res: Response) => {
 })
 
 // Endpoint to get fake products with filter query fetaure
-app.get('/fake-products',(req: Request, res: Response) => {
-    // Filter By Query, keyof IProduct
-    const filterQuery = req.query.filter as string;
-
-    if(filterQuery){
-        const propertiesToFilter = filterQuery.split(',');
-        let filteredProducts = [];
-
-        filteredProducts = fakeProducts.map(product => {
-            const filteredProduct : any = {};
-
-            propertiesToFilter.forEach(property => {
-                if(product.hasOwnProperty(property)){
-                    filteredProduct[property] = product[property as keyof IProduct];
-                }
-            });
-            return {id: product.id ,...filteredProduct};
-        })
-        res.send({
-            status:201,
-            message:'Fake Products Fetched Successfully',
-            products: filteredProducts
-        });
-        return;
-    }
-
-    res.send({
-        status:200,
-        message:'Fake Products Fetched Successfully',
-        products: fakeProducts
-    });
-
+app.get('/fake-products',(req, res) => {
+    res.send(productController.getProducts());
 });
 
 // Endpoint to get fake product by ID
