@@ -1,7 +1,7 @@
 import {faker} from '@faker-js/faker';
 import { IProduct } from '../interfaces/IProducts';
 
-export const generateFakeData = (): IProduct[] => {
+export const generateFakeProducts = (): IProduct[] => {
     return Array.from({length:25},(_,idx)=>{
         return {
             id: idx+1,

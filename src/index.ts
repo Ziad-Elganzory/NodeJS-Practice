@@ -1,14 +1,14 @@
 import express, { Request, Response } from 'express';
 import fs, {promises as fsPromises} from 'fs';
 import path from 'path';
-import { generateFakeData } from './utils/fakeData';
+import { generateFakeProducts } from './utils/fakeProductsData';
 import { IProduct } from './interfaces/IProducts';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const productsPath = path.join(__dirname,'data','products.json');
 
-const fakeProducts = generateFakeData();
+const fakeProducts = generateFakeProducts();
 
 /**
  * 
