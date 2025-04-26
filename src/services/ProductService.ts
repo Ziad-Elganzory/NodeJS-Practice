@@ -36,4 +36,9 @@ export default class ProductService {
         return this.findAll();
     }
 
+    getProductById(productId:number)
+    {
+        return this.findAll().find(product => product.id === productId)
+    }
+
 }

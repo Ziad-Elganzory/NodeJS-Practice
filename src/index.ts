@@ -189,45 +189,10 @@ app.post('/fake-products',async(req: Request, res: Response) => {
 })
 
 // Endpoint to get fake products with filter query fetaure
-app.get('/fake-products',(req, res) => {
-    res.send(productController.getProducts(req,res));
-});
+app.get('/fake-products',(req: Request, res: Response) => productController.getProducts(req,res));
 
 // Endpoint to get fake product by ID
-app.get('/fake-products/:id',(req: Request, res: Response) => {
-    const productID = +req.params.id;
-    if(isNaN(productID)){
-        res.status(400).send({
-            status:400,
-            message:'Invalid product ID'
-        });
-        return;
-    }
-
-    try{
-        const product: IProduct | undefined = fakeProducts.find( product => productID == product.id);
-        if(!product){
-            res.status(404).send({
-                status:404,
-                message:`Product ID: ${productID} Not Found`
-            });
-            return;
-        }
-        res.setHeader('Content-Type', 'application/json');
-        res.send({
-            status:200,
-            message:'Fake Product Fetched Successfully',
-            product: product
-        });
-    } catch(err){
-        res.status(500).send({
-            status:500,
-            message:'Internal Server Error',
-            error:err
-        });
-        return;
-    }
-});
+app.get('/fake-products/:id',(req: Request, res: Response) => productController.getProductById(req,res));
 
 // Endpoint to Update a certain fake product
 app.patch('/fake-products/:id',(req: Request, res: Response) => {
