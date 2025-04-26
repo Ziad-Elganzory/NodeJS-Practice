@@ -1,11 +1,9 @@
 import express, { Request, Response } from 'express';
-import fs, {promises as fsPromises} from 'fs';
 import path from 'path';
 import { generateFakeProducts } from './utils/fakeProductsData';
 import { IProduct } from './interfaces/IProducts';
 import ProductController from './controllers/ProductController';
 import ProductService from './services/ProductService';
-import { title } from 'process';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +23,8 @@ const fakeProducts = generateFakeProducts();
 
 app.use(express.json());
 app.set('view engine', 'pug');
+app.set('views',path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const productsService = new ProductService(fakeProducts);
 
