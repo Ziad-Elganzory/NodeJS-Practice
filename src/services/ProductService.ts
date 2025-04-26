@@ -1,6 +1,12 @@
 import { IProduct } from "../interfaces/IProducts";
 import { generateFakeProducts } from "../utils/fakeProductsData";
 
+type ProductBody = {
+    title: string;
+    price: number;
+    description: string;
+}
+
 export default class ProductService {
     private readonly products: IProduct[];
 
@@ -41,4 +47,24 @@ export default class ProductService {
         return this.findAll().find(product => product.id === productId)
     }
 
+    createProduct(product: ProductBody)
+    {
+        return this.findAll().push({
+            id: this.products.length + 1,
+            ...product
+        });
+    }
+
+    updateProductByIndex(index: number, product: ProductBody)
+    {
+        return this.findAll()[index] = { ... this.findAll()[index], ...product };
+    }
+
+    deleteProduct(id: number)
+    {
+        const products = this.findAll();
+        const filteredProducts = products.filter(product => product.id !== id);
+        products.length = 0;
+        products.push(...filteredProducts);
+    }
 }
