@@ -5,10 +5,11 @@ import { generateFakeProducts } from './utils/fakeProductsData';
 import { IProduct } from './interfaces/IProducts';
 import ProductController from './controllers/ProductController';
 import ProductService from './services/ProductService';
+import { title } from 'process';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const productsPath = path.join(__dirname,'data','products.json');
+
 
 const fakeProducts = generateFakeProducts();
 
@@ -23,13 +24,14 @@ const fakeProducts = generateFakeProducts();
 // }))
 
 app.use(express.json());
+app.set('view engine', 'pug');
 
 const productsService = new ProductService(fakeProducts);
 
 const productController = new ProductController(productsService)
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World');
+    res.render('index',{title: 'Hey', message: 'Hello there!'});
 });
 
 /**
