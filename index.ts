@@ -30,9 +30,11 @@ const productsService = new ProductService(fakeProducts);
 
 const productController = new ProductController(productsService)
 
-app.get('/', (req: Request, res: Response) => {
-    res.render('index',{title: 'Hey', message: 'Hello there!'});
-});
+
+app.get('/products', (req: Request, res: Response) => {
+    res.render('products');
+})
+
 
 /**
  * 
@@ -41,21 +43,31 @@ app.get('/', (req: Request, res: Response) => {
  */
 
 // Endpoint to generate fake products
-app.post('/fake-products',async(req: Request, res: Response) => productController.createProduct(req,res));
+app.post('/api/fake-products',async(req: Request, res: Response) => productController.createProduct(req,res));
 
 // Endpoint to get fake products with filter query fetaure
-app.get('/fake-products',(req: Request, res: Response) => productController.getProducts(req,res));
+app.get('/api/fake-products',(req: Request, res: Response) => productController.getProducts(req,res));
 
 // Endpoint to get fake product by ID
-app.get('/fake-products/:id',(req: Request, res: Response) => productController.getProductById(req,res));
+app.get('/api/fake-products/:id',(req: Request, res: Response) => productController.getProductById(req,res));
 
 // Endpoint to Update a certain fake product
-app.patch('/fake-products/:id',(req: Request, res: Response) => productController.updateProduct(req,res));
+app.patch('/api/fake-products/:id',(req: Request, res: Response) => productController.updateProduct(req,res));
 
 // Endpoint to Delete a certain fake product
-app.delete('/fake-products/:id',(req: Request, res: Response) => productController.deleteProduct(req,res));
+app.delete('/api/fake-products/:id',(req: Request, res: Response) => productController.deleteProduct(req,res));
+
+app.get('/', (req: Request, res: Response) => {
+    res.render('index',{title: 'Hey', message: 'Hello there!'});
+});
 
 
+app.get("/{*splat}", (req: Request, res: Response) => {
+    res.status(404).render('404', { 
+        title: 'Page Not Found', 
+        message: 'Sorry, we could not find the page you were looking for.' 
+    });
+});
 
 
 app.listen(PORT,() => {
