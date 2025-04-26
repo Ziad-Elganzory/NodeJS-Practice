@@ -147,5 +147,14 @@ export default class ProductController {
             return;
         }    
     }
+
+    renderProductsList(req: Request, res: Response)
+    {
+        const products = this.productsService.findAll();
+        res.render('products', {
+            pageTitle: 'Products',
+            products: products,
+        });
+    }
 }
 

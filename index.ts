@@ -31,9 +31,7 @@ const productsService = new ProductService(fakeProducts);
 const productController = new ProductController(productsService)
 
 
-app.get('/products', (req: Request, res: Response) => {
-    res.render('products');
-})
+app.get('/products', (req: Request, res: Response) => productController.renderProductsList(req,res))
 
 
 /**

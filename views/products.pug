@@ -5,4 +5,8 @@ html(lang="en")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title Products Page
     body 
-        h1 Meet our Awsome Products
+        h1= pageTitle
+        p= description
+        ul
+            each product in products
+                li= product.id + ' - ' + product.price + ' - ' + product.title
