@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { IProduct } from "../interfaces/IProducts";
 import ProductService from "../services/ProductService";
-import { th } from "@faker-js/faker/.";
+import { de, th } from "@faker-js/faker/.";
 
 export default class ProductController {
     constructor(private productsService: ProductService) {}
@@ -150,10 +150,10 @@ export default class ProductController {
 
     renderProductsList(req: Request, res: Response)
     {
-        const products = this.productsService.findAll();
         res.render('products', {
             pageTitle: 'Products',
-            products: products,
+            description: 'Fake Products List',
+            products: this.productsService.findAll(),
         });
     }
 }

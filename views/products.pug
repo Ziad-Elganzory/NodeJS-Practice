@@ -4,9 +4,17 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title Products Page
-    body 
-        h1= pageTitle
-        p= description
-        ul
-            each product in products
-                li= product.id + ' - ' + product.price + ' - ' + product.title
+        link(rel="stylesheet", href="/styles/global.css")
+    body
+        .container
+            h1.page-title= pageTitle
+            p.page-description= description
+            .products-grid
+                each product in products
+                    .item-container
+                        h2.item-heading= product.title
+                        p.item-description= product.description
+                        p.item-price
+                            sup $
+                            | #{product.price}/-
+                        button.item-cart-btn Add To Cart
