@@ -156,5 +156,14 @@ export default class ProductController {
             products: this.productsService.findAll(),
         });
     }
+
+    renderProductPage(req: Request, res: Response)
+    {
+        const productID = +req.params.id;
+
+        res.render('product',{
+            product: this.productsService.getProductById(productID),
+        });
+    }
 }
 

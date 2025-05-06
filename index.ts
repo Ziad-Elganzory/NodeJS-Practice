@@ -31,7 +31,8 @@ const productsService = new ProductService(fakeProducts);
 const productController = new ProductController(productsService)
 
 
-app.get('/products', (req: Request, res: Response) => productController.renderProductsList(req,res))
+app.get('/products', (req: Request, res: Response) => productController.renderProductsList(req,res));
+app.get('/products/:id', (req: Request, res: Response) => productController.renderProductPage(req,res))
 
 
 /**

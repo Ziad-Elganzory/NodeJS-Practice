@@ -12,7 +12,8 @@ html(lang="en")
             .products-grid
                 each product in products
                     .item-container
-                        h2.item-heading= product.title
+                        a(href=`/products/${product.id}`) 
+                            h2.item-heading= product.title
                         p.item-description= product.description
                         p.item-price
                             sup $

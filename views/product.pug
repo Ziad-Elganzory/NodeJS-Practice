@@ -1,0 +1,11 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title= product.id
+        link(rel="stylesheet", href="/styles/global.css")
+    body 
+        h1= `Title: ${product.title}`
+        p= `Description: ${product.description}`
+        p= `Price: $${product.price}`
